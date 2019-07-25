@@ -48,7 +48,11 @@ module HairTrigger
         migrations = ActiveRecord::Migrator.migrations(migration_path)
       end
 
-      ActiveRecord::Migrator.new(:up, migrations)
+      if version >= "6.0."
+        ActiveRecord::Migrator.new(:up, migrations, ActiveRecord::SchemaMigration)
+      else
+        ActiveRecord::Migrator.new(:up, migrations)
+      end
     end
 
     def current_migrations(options = {})
