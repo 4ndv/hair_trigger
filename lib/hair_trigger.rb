@@ -22,19 +22,16 @@ module HairTrigger
     end
 
     def models
-      if defined?(Rails)
-        Rails.application.eager_load!
-      else
-        Dir[model_path + '/*rb'].each do |model|
-          class_name = model.sub(/\A.*\/(.*?)\.rb\z/, '\1').camelize
-          next unless File.read(model) =~ /^\s*trigger[\.\(]/
-          begin
-            require "./#{model}" unless Object.const_defined?(class_name)
-          rescue StandardError, LoadError
-            raise "unable to load #{class_name} and its trigger(s)"
-          end
+      Dir[model_path + '/*rb'].each do |model|
+        class_name = model.sub(/\A.*\/(.*?)\.rb\z/, '\1').camelize
+        next unless File.read(model) =~ /^\s*trigger[\.\(]/
+        begin
+          require "./#{model}" unless Object.const_defined?(class_name)
+        rescue StandardError, LoadError
+          raise "unable to load #{class_name} and its trigger(s)"
         end
       end
+
       ActiveRecord::Base.descendants
     end
 
